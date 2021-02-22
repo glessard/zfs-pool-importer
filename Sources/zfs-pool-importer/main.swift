@@ -47,8 +47,17 @@ let code = launch(command: "/usr/local/zfs/bin/zpool",
 
 stdout.print("\(formatter.string(from: Date())): zpool import returned with exit code \(code)")
 
-stdout.print("Updating file access and modification time at path \(zpoolImportCookie)")
-launch(command: "/usr/bin/touch", arguments: [zpoolImportCookie])
+let mod = [FileAttributeKey.modificationDate: NSDate()]
+do {
+  try fm.setAttributes(mod, ofItemAtPath: zpoolImportCookie)
+  stdout.print("Updated modification time at path \(zpoolImportCookie)")
+}
+catch {
+  if fm.createFile(atPath: zpoolImportCookie, contents: nil, attributes: mod)
+  { stdout.print("Created \(zpoolImportCookie)") }
+  else
+  { FileHandle.standardError.print("Failed to create \(zpoolImportCookie)") }
+}
 
 formatter.dateStyle = .medium
 formatter.timeStyle = .long
