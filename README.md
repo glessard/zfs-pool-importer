@@ -6,7 +6,7 @@ The advantages over the [shell script](https://github.com/openzfsonosx/openzfs/b
 
 What's required for `zfs-pool-importer` to request full disk access to happen is that it must be launched once; the operation that requires full disk access will fail, and `zfs-pool-importer` will appear in the list at "System Preferences -> Security & Privacy -> Full Disk Access", unchecked. The user can then choose to enable it. The installation script in this repository performs the necessary launch.
 
-There is no real difference in functionality compared to the shell script, though the log output is slightly different.
+There is no real difference in functionality compared to the shell script, though the log output is slightly different and, as described, the experience is clearer.
 
 ### To install
 
@@ -18,5 +18,5 @@ $ sudo ./install.sh
 
 Additionally, you may want to disable the old shell script by removing `zpool-import-all`'s launchd file:
 ```
-$ sudo rm -f /Library/LaunchDaemons/org.openzfsonosx.zpool-import-all.plist`
+$ sudo rm -f /Library/LaunchDaemons/org.openzfsonosx.zpool-import-all.plist
 ```
