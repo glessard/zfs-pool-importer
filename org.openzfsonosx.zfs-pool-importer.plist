@@ -7,6 +7,7 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/usr/local/zfs/libexec/zfs/launchd.d/zfs-pool-importer</string>
+		<string>--sbindir=/usr/local/zfs/bin/</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>

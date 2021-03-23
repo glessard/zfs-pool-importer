@@ -11,7 +11,22 @@ formatter.timeStyle = .long
 
 let stdout = FileHandle.standardOutput
 
-stdout.print("+zfs-pool-importer")
+let command = ProcessInfo.processInfo.arguments.first?.split(separator: "/").last ?? "zfs_pool_importer"
+let arguments = ProcessInfo.processInfo.arguments.dropFirst()
+let sbin = arguments.first.flatMap {
+  arg in // elementary (and inflexible) parsing of a single possible command line option
+  var dir = ObjCBool(false)
+  guard arg.hasPrefix("--sbindir"),
+        let rawPath = arg.split(separator: "=").last.map(String.init),
+        FileManager.default.fileExists(atPath: rawPath, isDirectory: &dir),
+        dir.boolValue == true
+    else { return nil }
+  return URL(fileURLWithPath: rawPath, isDirectory: true).path.appending("/")
+} ?? "/usr/local/zfs/bin/"
+
+let zpool = sbin + "zpool"
+
+stdout.print("+\(command)")
 stdout.print(formatter.string(from: Date()))
 
 formatter.dateStyle = .none
@@ -42,8 +57,7 @@ stdout.print("\(invariantDisksCookie) was\(found ? "" : "n't") found in \(String
 Thread.sleep(forTimeInterval: 10)
 stdout.print("\(formatter.string(from: Date())): running zpool import -a")
 
-let code = launch(command: "/usr/local/zfs/bin/zpool",
-                  arguments: ["import", "-a", "-d", "/var/run/disk/by-id"])
+let code = launch(command: zpool, arguments: ["import", "-a", "-d", "/var/run/disk/by-id"])
 
 stdout.print("\(formatter.string(from: Date())): zpool import returned with exit code \(code)")
 
@@ -62,6 +76,6 @@ catch {
 formatter.dateStyle = .medium
 formatter.timeStyle = .long
 stdout.print(formatter.string(from: Date()))
-stdout.print("-zfs-pool-importer")
+stdout.print("-\(command)")
 
 exit(code)
